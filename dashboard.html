@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Clientes</title>
+    <style>
+        body {
+            background-color: #182331;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #1c2a3e;
+            border-radius: 8px;
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #444;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #2d3e50;
+        }
+        input, select {
+            padding: 5px;
+            margin: 5px 0;
+            width: calc(100% - 12px);
+        }
+        .add-client-form, .client-table, .total-sales {
+            margin-top: 20px;
+        }
+        .total-sales span {
+            font-size: 1.5em;
+        }
+        .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #1c2a3e;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover, .close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section add-client-form">
+            <h2>Adicionar Novo Cliente</h2>
+            <form id="addClientForm">
+                <label for="clientName">Nome:</label>
+                <input type="text" id="clientName" required>
+                <label for="clientProfile">Perfil:</label>
+                <select id="clientProfile">
+                    <option value="bravo">Bravo</option>
+                    <option value="safe">Safe</option>
+                    <option value="medio">Médio</option>
+                </select>
+                <label for="clientDissonance">Linguagem de Dissonância:</label>
+                <select id="clientDissonance">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                </select>
+                <label for="clientLocation">Localização:</label>
+                <input type="text" id="clientLocation" required>
+                <label for="clientPurchase">Última Compra:</label>
+                <input type="text" id="clientPurchase" placeholder="Produto">
+                <label for="purchaseDate">Data:</label>
+                <input type="date" id="purchaseDate">
+                <label for="purchaseValue">Valor:</label>
+                <input type="number" id="purchaseValue" step="0.01">
+                <button type="button" onclick="addClient()">Adicionar Cliente</button>
+            </form>
+        </div>
+
+        <div class="section client-table">
+            <h2>Lista de Clientes</h2>
+            <table id="clientsTable">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Perfil</th>
+                        <th>Dissonância</th>
+                        <th>Localização</th>
+                        <th>Última Compra</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Clientes serão adicionados aqui -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section total-sales">
+            <h2>Valor Total Vendido no Mês</h2>
+            <span id="totalSales">R$ 0.00</span>
+        </div>
+    </div>
+
+    <!-- Modal para edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Editar Cliente</h2>
+            <form id="editClientForm">
+                <label for="editClientName">Nome:</label>
+                <input type="text" id="editClientName" required>
+                <label for="editClientProfile">Perfil:</label>
+                <select id="editClientProfile">
+                    <option value="bravo">Bravo</option>
+                    <option value="safe">Safe</option>
+                    <option value="medio">Médio</option>
+                </select>
+                <label for="editClientDissonance">Linguagem de Dissonância:</label>
+                <select id="editClientDissonance">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                </select>
+                <label for="editClientLocation">Localização:</label>
+                <input type="text" id="editClientLocation" required>
+                <label for="editClientPurchase">Última Compra:</label>
+                <input type="text" id="editClientPurchase" placeholder="Produto">
+                <label for="editPurchaseDate">Data:</label>
+                <input type="date" id="editPurchaseDate">
+                <label for="editPurchaseValue">Valor:</label>
+                <input type="number" id="editPurchaseValue" step="0.01">
+                <button type="button" onclick="updateClient()">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let totalSales = 0;
+        let editRowIndex = null;
+
+        function addClient() {
+            const clientName = document.getElementById('clientName').value;
+            const clientProfile = document.getElementById('clientProfile').value;
+            const clientDissonance = document.getElementById('clientDissonance').value;
+            const clientLocation = document.getElementById('clientLocation').value;
+            const clientPurchase = document.getElementById('clientPurchase').value;
+            const purchaseDate = document.getElementById('purchaseDate').value;
+            const purchaseValue = parseFloat(document.getElementById('purchaseValue').value);
+
+            const table = document.getElementById('clientsTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            newRow.insertCell(0).textContent = clientName;
+            newRow.insertCell(1).textContent = clientProfile;
+            newRow.insertCell(2).textContent = clientDissonance;
+            newRow.insertCell(3).textContent = clientLocation;
+            newRow.insertCell(4).textContent = clientPurchase;
+            newRow.insertCell(5).textContent = purchaseDate;
+            newRow.insertCell(6).textContent = purchaseValue.toFixed(2);
+
+            const actionsCell = newRow.insertCell(7);
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-btn';
+            editButton.textContent = 'Editar';
+            editButton.onclick = function() { openEditModal(newRow.rowIndex); };
+            actionsCell.appendChild(editButton);
+
+            totalSales += purchaseValue;
+            document.getElementById('totalSales').textContent = `R$ ${totalSales.toFixed(2)}`;
+
+            document.getElementById('addClientForm').reset();
+        }
+
+        function openEditModal(rowIndex) {
+            editRowIndex = rowIndex;
+            const table = document.getElementById('clientsTable').getElementsByTagName('tbody')[0];
+            const row = table.rows[editRowIndex - 1];
+
+            document.getElementById('editClientName').value = row.cells[0].textContent;
+            document.getElementById('editClientProfile').value = row.cells[1].textContent;
+            document.getElementById('editClientDissonance').value = row.cells[2].textContent;
+            document.getElementById('editClientLocation').value = row.cells[3].textContent;
+            document.getElementById('editClientPurchase').value = row.cells[4].textContent;
+            document.getElementById('editPurchaseDate').value = row.cells[5].textContent;
+            document.getElementById('editPurchaseValue').value = parseFloat(row.cells[6].textContent);
+
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function updateClient() {
+            const clientName = document.getElementById('editClientName').value;
+            const clientProfile = document.getElementById('editClientProfile').value;
+            const clientDissonance = document.getElementById('editClientDissonance').value;
+            const clientLocation = document.getElementById('editClientLocation').value;
+            const clientPurchase = document.getElementById('editClientPurchase').value;
+            const purchaseDate = document.getElementById('editPurchaseDate').value;
+            const purchaseValue = parseFloat(document.getElementById('editPurchaseValue').value);
+
+            const table = document.getElementById('clientsTable').getElementsByTagName('tbody')[0];
+            const row = table.rows[editRowIndex - 1];
+
+            totalSales -= parseFloat(row.cells[6].textContent);
+            totalSales += purchaseValue;
+
+            row.cells[0].textContent = clientName;
+            row.cells[1].textContent = clientProfile;
+            row.cells[2].textContent = clientDissonance;
+            row.cells[3].textContent = clientLocation;
+            row.cells[4].textContent = clientPurchase;
+            row.cells[5].textContent = purchaseDate;
+            row.cells[6].textContent = purchaseValue.toFixed(2);
+
+            document.getElementById('totalSales').textContent = `R$ ${totalSales.toFixed(2)}`;
+
+            closeModal();
+        }
+    </script>
+</body>
+</html>
