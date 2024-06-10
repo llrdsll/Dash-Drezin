@@ -46,10 +46,10 @@
             margin: 5px 0;
             width: calc(100% - 12px);
         }
-        .add-client-form, .client-table, .total-sales {
+        .add-client-form, .client-table, .total-sales, .monthly-sales {
             margin-top: 20px;
         }
-        .total-sales span {
+        .total-sales span, .monthly-sales span {
             font-size: 1.5em;
         }
         .edit-btn {
@@ -152,8 +152,23 @@
         </div>
 
         <div class="section total-sales">
-            <h2>Valor Total Vendido no Mês</h2>
+            <h2>Valor Total Vendido</h2>
             <span id="totalSales">R$ 0.00</span>
+        </div>
+
+        <div class="section monthly-sales">
+            <h2>Valor Total Vendido por Mês</h2>
+            <table id="monthlySalesTable">
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Valor Total Vendido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Totais mensais serão adicionados aqui -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -200,6 +215,10 @@
         let totalSales = 0;
         let editRowIndex = null;
 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadClientsFromStorage();
+        });
+
         function addClient() {
             const clientName = document.getElementById('clientName').value;
             const clientProfile = document.getElementById('clientProfile').value;
@@ -209,42 +228,76 @@
             const purchaseDate = document.getElementById('purchaseDate').value;
             const purchaseValue = parseFloat(document.getElementById('purchaseValue').value);
 
+            const clientData = {
+                name: clientName,
+                profile: clientProfile,
+                dissonance: clientDissonance,
+                location: clientLocation,
+                purchase: clientPurchase,
+                date: purchaseDate,
+                value: purchaseValue
+            };
+
+            addClientToTable(clientData);
+            saveClientToStorage(clientData);
+
+            totalSales += purchaseValue;
+            document.getElementById('totalSales').textContent = R$ ${totalSales.toFixed(2)};
+
+            document.getElementById('addClientForm').reset();
+
+            updateMonthlySales();
+        }
+
+        function addClientToTable(clientData) {
             const table = document.getElementById('clientsTable').getElementsByTagName('tbody')[0];
             const newRow = table.insertRow();
 
-            newRow.insertCell(0).textContent = clientName;
-            newRow.insertCell(1).textContent = clientProfile;
-            newRow.insertCell(2).textContent = clientDissonance;
-            newRow.insertCell(3).textContent = clientLocation;
-            newRow.insertCell(4).textContent = clientPurchase;
-            newRow.insertCell(5).textContent = purchaseDate;
-            newRow.insertCell(6).textContent = purchaseValue.toFixed(2);
+            newRow.insertCell(0).textContent = clientData.name;
+            newRow.insertCell(1).textContent = clientData.profile;
+            newRow.insertCell(2).textContent = clientData.dissonance;
+            newRow.insertCell(3).textContent = clientData.location;
+            newRow.insertCell(4).textContent = clientData.purchase;
+            newRow.insertCell(5).textContent = clientData.date;
+            newRow.insertCell(6).textContent = clientData.value.toFixed(2);
 
             const actionsCell = newRow.insertCell(7);
             const editButton = document.createElement('button');
-            editButton.className = 'edit-btn';
             editButton.textContent = 'Editar';
-            editButton.onclick = function() { openEditModal(newRow.rowIndex); };
+            editButton.classList.add('edit-btn');
+            editButton.onclick = () => {
+                openModal(clientData, newRow.rowIndex);
+            };
             actionsCell.appendChild(editButton);
-
-            totalSales += purchaseValue;
-            document.getElementById('totalSales').textContent = `R$ ${totalSales.toFixed(2)}`;
-
-            document.getElementById('addClientForm').reset();
         }
 
-        function openEditModal(rowIndex) {
-            editRowIndex = rowIndex;
-            const table = document.getElementById('clientsTable').getElementsByTagName('tbody')[0];
-            const row = table.rows[editRowIndex - 1];
+        function saveClientToStorage(clientData) {
+            let clients = JSON.parse(localStorage.getItem('clients')) || [];
+            clients.push(clientData);
+            localStorage.setItem('clients', JSON.stringify(clients));
+        }
 
-            document.getElementById('editClientName').value = row.cells[0].textContent;
-            document.getElementById('editClientProfile').value = row.cells[1].textContent;
-            document.getElementById('editClientDissonance').value = row.cells[2].textContent;
-            document.getElementById('editClientLocation').value = row.cells[3].textContent;
-            document.getElementById('editClientPurchase').value = row.cells[4].textContent;
-            document.getElementById('editPurchaseDate').value = row.cells[5].textContent;
-            document.getElementById('editPurchaseValue').value = parseFloat(row.cells[6].textContent);
+        function loadClientsFromStorage() {
+            let clients = JSON.parse(localStorage.getItem('clients')) || [];
+            clients.forEach(client => {
+                addClientToTable(client);
+                totalSales += client.value;
+            });
+            document.getElementById('totalSales').textContent = R$ ${totalSales.toFixed(2)};
+
+            updateMonthlySales();
+        }
+
+        function openModal(clientData, rowIndex) {
+            editRowIndex = rowIndex;
+
+            document.getElementById('editClientName').value = clientData.name;
+            document.getElementById('editClientProfile').value = clientData.profile;
+            document.getElementById('editClientDissonance').value = clientData.dissonance;
+            document.getElementById('editClientLocation').value = clientData.location;
+            document.getElementById('editClientPurchase').value = clientData.purchase;
+            document.getElementById('editPurchaseDate').value = clientData.date;
+            document.getElementById('editPurchaseValue').value = clientData.value;
 
             document.getElementById('editModal').style.display = 'block';
         }
@@ -276,9 +329,56 @@
             row.cells[5].textContent = purchaseDate;
             row.cells[6].textContent = purchaseValue.toFixed(2);
 
-            document.getElementById('totalSales').textContent = `R$ ${totalSales.toFixed(2)}`;
+            document.getElementById('totalSales').textContent = R$ ${totalSales.toFixed(2)};
+
+            const clientData = {
+                name: clientName,
+                profile: clientProfile,
+                dissonance: clientDissonance,
+                location: clientLocation,
+                purchase: clientPurchase,
+                date: purchaseDate,
+                value: purchaseValue
+            };
+
+            updateClientInStorage(editRowIndex - 1, clientData);
+
+            updateMonthlySales();
 
             closeModal();
+        }
+
+        function updateClientInStorage(index, clientData) {
+            let clients = JSON.parse(localStorage.getItem('clients')) || [];
+            clients[index] = clientData;
+            localStorage.setItem('clients', JSON.stringify(clients));
+        }
+
+        function updateMonthlySales() {
+            const clients = JSON.parse(localStorage.getItem('clients')) || [];
+            const monthlyTotals = {};
+
+            clients.forEach(client => {
+                const date = new Date(client.date);
+                const month = date.getMonth() + 1;  // JavaScript months are 0-based.
+                const year = date.getFullYear();
+                const monthYear = ${month}-${year};
+
+                if (!monthlyTotals[monthYear]) {
+                    monthlyTotals[monthYear] = 0;
+                }
+
+                monthlyTotals[monthYear] += client.value;
+            });
+
+            const table = document.getElementById('monthlySalesTable').getElementsByTagName('tbody')[0];
+            table.innerHTML = '';  // Clear the table before adding updated totals.
+
+            Object.keys(monthlyTotals).forEach(monthYear => {
+                const newRow = table.insertRow();
+                newRow.insertCell(0).textContent = monthYear;
+                newRow.insertCell(1).textContent = R$ ${monthlyTotals[monthYear].toFixed(2)};
+            });
         }
     </script>
 </body>
