@@ -6,8 +6,8 @@
     <title>Dashboard de Clientes</title>
     <style>
         body {
-            background-color: #182331;
-            color: white;
+            background-color: #0d1117;
+            color: #c9d1d9;
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -20,11 +20,13 @@
         .section {
             margin-bottom: 20px;
             padding: 20px;
-            background-color: #1c2a3e;
+            background-color: #161b22;
             border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         .section h2 {
             margin-top: 0;
+            color: #58a6ff;
         }
         table {
             width: 100%;
@@ -32,33 +34,46 @@
             margin-top: 10px;
         }
         table, th, td {
-            border: 1px solid #444;
+            border: 1px solid #30363d;
         }
         th, td {
             padding: 8px;
             text-align: left;
         }
         th {
-            background-color: #2d3e50;
+            background-color: #21262d;
         }
         input, select {
-            padding: 5px;
-            margin: 5px 0;
-            width: calc(100% - 12px);
+            padding: 10px;
+            margin: 10px 0;
+            width: calc(100% - 22px);
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 5px;
         }
-        .add-client-form, .client-table, .total-sales, .monthly-sales {
-            margin-top: 20px;
+        .add-client-form button, .modal button {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
         }
-        .total-sales span, .monthly-sales span {
-            font-size: 1.5em;
+        .add-client-form button:hover, .modal button:hover {
+            background-color: #2ea043;
         }
         .edit-btn {
-            background-color: #4CAF50;
+            background-color: #4caf50;
             color: white;
             border: none;
             padding: 5px 10px;
             cursor: pointer;
             border-radius: 5px;
+        }
+        .edit-btn:hover {
+            background-color: #45a049;
         }
         .modal {
             display: none;
@@ -69,15 +84,14 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.8);
         }
         .modal-content {
-            background-color: #1c2a3e;
+            background-color: #161b22;
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
+            width: 50%;
             border-radius: 8px;
         }
         .close {
@@ -90,6 +104,10 @@
             color: white;
             text-decoration: none;
             cursor: pointer;
+        }
+        .total-sales span, .monthly-sales span {
+            font-size: 1.5em;
+            color: #58a6ff;
         }
     </style>
 </head>
