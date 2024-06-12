@@ -103,13 +103,85 @@
         .theme-toggle:hover {
             color: var(--highlight-orange);
         }
+
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--background-color);
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+            border-right: 1px solid var(--highlight-blue);
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: var(--text-color);
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--highlight-blue);
+            color: white;
+        }
+
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        #main {
+            transition: margin-left 0.3s;
+            padding: 16px;
+            margin-left: 250px;
+        }
+
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: var(--highlight-blue);
+            color: white;
+            border: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            transition: 0.3s;
+        }
+
+        .openbtn:hover {
+            background-color: var(--highlight-orange);
+        }
     </style>
 </head>
 <body data-theme="light">
-    <div class="container">
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <a href="#">Dashboard</a>
+        <a href="#">Customes</a>
+        <a href="#">Mensagens</a>
+        <a href="#">Ajuda</a>
+        <a href="#">Senhas</a>
+        <a href="#">Sign Out</a>
+    </div>
+
+    <div id="main">
+        <button class="openbtn" onclick="openNav()">☰</button>
+        <button class="theme-toggle" id="theme-toggle">🌙</button>
         <h1 class="my-4">Dashboard de Clientes</h1>
 
-        <button class="theme-toggle" id="theme-toggle">🌙</button>
+        <div class="form-group">
+            <label for="search">Buscar Cliente pelo Nome</label>
+            <input type="text" class="form-control" id="search" placeholder="Digite o nome do cliente">
+        </div>
         
         <div class="row">
             <div class="col-md-4">
@@ -160,10 +232,6 @@
         <hr>
         
         <h2>Clientes</h2>
-        <div class="form-group">
-            <label for="search">Buscar Cliente pelo Nome</label>
-            <input type="text" class="form-control" id="search" placeholder="Digite o nome do cliente">
-        </div>
         <table class="table futuristic-table" id="clientes-table">
             <thead>
                 <tr>
@@ -182,20 +250,23 @@
         <h2>Gráfico de Compras</h2>
         <canvas id="grafico-compras"></canvas>
         
-        <h4>Total Mensal:</h4>
-        <table class="table table-modern" id="total-mensal-table">
+        <hr>
+        
+        <h2>Totais Mensais</h2>
+        <table class="table table-modern">
             <thead>
                 <tr>
                     <th>Mês</th>
-                    <th>Valor Total</th>
+                    <th>Total (R$)</th>
                 </tr>
             </thead>
             <tbody id="total-mensal"></tbody>
         </table>
-        <h4>Total Anual: <span id="total-anual"></span></h4>
+        
+        <h2>Total Anual: R$ <span id="total-anual">0.00</span></h2>
     </div>
-
-    <!-- Modal de Edição -->
+    
+    <!-- Edit Modal -->
     <div class="modal fade" id="edit-modal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -252,6 +323,16 @@
     </div>
 
     <script>
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+            document.getElementById("main").style.marginLeft = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("main").style.marginLeft= "0";
+        }
+
         $(document).ready(function() {
             var clientes = JSON.parse(localStorage.getItem('clientes')) || [];
             var graficoCompras = new Chart(document.getElementById('grafico-compras').getContext('2d'), {
@@ -402,24 +483,23 @@
             }
 
             function calcularTotais() {
-                var totalMensal = {};
+                var totalPorMes = {};
                 var totalAnual = 0;
 
                 clientes.forEach(function(cliente) {
                     var mes = new Date(cliente.dataUltimaCompra).toISOString().substring(0, 7); // YYYY-MM
-                    if (!totalMensal[mes]) {
-                        totalMensal[mes] = 0;
+                    if (!totalPorMes[mes]) {
+                        totalPorMes[mes] = 0;
                     }
-                    totalMensal[mes] += cliente.valorUltimaCompra;
+                    totalPorMes[mes] += cliente.valorUltimaCompra;
                     totalAnual += cliente.valorUltimaCompra;
                 });
 
-                var totalMensalHtml = '';
-                for (var mes in totalMensal) {
-                    totalMensalHtml += '<tr><td>' + mes + '</td><td>' + totalMensal[mes].toFixed(2) + '</td></tr>';
-                }
+                $('#total-mensal').empty();
+                Object.keys(totalPorMes).sort().forEach(function(mes) {
+                    $('#total-mensal').append('<tr><td>' + mes + '</td><td>' + totalPorMes[mes].toFixed(2) + '</td></tr>');
+                });
 
-                $('#total-mensal').html(totalMensalHtml);
                 $('#total-anual').text(totalAnual.toFixed(2));
             }
 
@@ -428,19 +508,16 @@
             }
 
             $('#theme-toggle').click(function() {
-                var theme = $('body').attr('data-theme');
-                var newTheme = theme === 'light' ? 'dark' : 'light';
-                var icon = newTheme === 'light' ? '🌙' : '☀';
-                $(this).text(icon);
+                var currentTheme = $('body').attr('data-theme');
+                var newTheme = currentTheme === 'light' ? 'dark' : 'light';
                 $('body').attr('data-theme', newTheme);
+                $(this).text(newTheme === 'light' ? '🌙' : '☀');
             });
 
-            // Inicializar tabela e gráfico com dados do localStorage
             atualizarTabela();
             atualizarGraficoCompras();
             calcularTotais();
         });
     </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
