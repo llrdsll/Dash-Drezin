@@ -72,13 +72,21 @@
             --text-color: #333;
             --table-background: #fff;
             --table-header-background: #007bff;
+            --highlight-green: #28a745;
+            --highlight-red: #dc3545;
+            --highlight-blue: #007bff;
+            --highlight-orange: #fd7e14;
         }
 
         [data-theme="dark"] {
-            --background-color: #121212;
+            --background-color: #182331;
             --text-color: #e0e0e0;
             --table-background: #1e1e1e;
             --table-header-background: #3f51b5;
+            --highlight-green: #28a745;
+            --highlight-red: #dc3545;
+            --highlight-blue: #007bff;
+            --highlight-orange: #fd7e14;
         }
 
         .theme-toggle {
@@ -93,7 +101,7 @@
         }
 
         .theme-toggle:hover {
-            color: #ffb74d;
+            color: var(--highlight-orange);
         }
     </style>
 </head>
@@ -388,7 +396,7 @@
                 graficoCompras.data.datasets[0].data = data;
                 graficoCompras.data.datasets[0].backgroundColor = data.map(function(value, index) {
                     if (index === 0) return 'rgba(75, 192, 192, 0.6)';
-                    return value >= data[index - 1] ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)';
+                    return value >= data[index - 1] ? 'rgba(40, 167, 69, 0.6)' : 'rgba(220, 53, 69, 0.6)';
                 });
                 graficoCompras.update();
             }
@@ -422,6 +430,8 @@
             $('#theme-toggle').click(function() {
                 var theme = $('body').attr('data-theme');
                 var newTheme = theme === 'light' ? 'dark' : 'light';
+                var icon = newTheme === 'light' ? '🌙' : '☀';
+                $(this).text(icon);
                 $('body').attr('data-theme', newTheme);
             });
 
