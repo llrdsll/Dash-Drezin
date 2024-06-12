@@ -9,73 +9,143 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            background-color: #f4f4f9;
-            color: #333;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
-        .form-group label {
-            font-weight: bold;
-        }
-        .table-modern {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        .table-modern thead {
-            background-color: #007bff;
+
+        .futuristic-card {
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             color: white;
+            padding: 20px;
+            margin-bottom: 20px;
         }
+
+        .futuristic-table {
+            background: linear-gradient(135deg, #2b5876, #4e4376);
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .futuristic-table thead {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .futuristic-table th, .futuristic-table td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .btn-futuristic {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .btn-futuristic:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+        }
+
+        .table-modern {
+            background-color: var(--table-background);
+            color: var(--text-color);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .table-modern thead {
+            background-color: var(--table-header-background);
+        }
+
         .table-modern th, .table-modern td {
             padding: 15px;
             text-align: center;
         }
+
+        :root {
+            --background-color: #f4f4f9;
+            --text-color: #333;
+            --table-background: #fff;
+            --table-header-background: #007bff;
+        }
+
+        [data-theme="dark"] {
+            --background-color: #121212;
+            --text-color: #e0e0e0;
+            --table-background: #1e1e1e;
+            --table-header-background: #3f51b5;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .theme-toggle:hover {
+            color: #ffb74d;
+        }
     </style>
 </head>
-<body>
+<body data-theme="light">
     <div class="container">
         <h1 class="my-4">Dashboard de Clientes</h1>
+
+        <button class="theme-toggle" id="theme-toggle">🌙</button>
         
         <div class="row">
             <div class="col-md-4">
-                <form id="client-form">
-                    <div class="form-group">
-                        <label for="nome">Nome</label>
-                        <input type="text" class="form-control" id="nome" placeholder="Nome do Cliente" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="perfil">Perfil</label>
-                        <select class="form-control" id="perfil" required>
-                            <option value="Safe">Safe</option>
-                            <option value="Bravo">Bravo</option>
-                            <option value="Normal">Normal</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="dissonancia">Dissonância</label>
-                        <select class="form-control" id="dissonancia" required>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="localizacao">Localização</label>
-                        <input type="text" class="form-control" id="localizacao" placeholder="Localização" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ultimas-pecas">Últimas Peças Compradas</label>
-                        <input type="text" class="form-control" id="ultimas-pecas" placeholder="Peças compradas" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="data-ultima-compra">Data da Última Compra</label>
-                        <input type="date" class="form-control" id="data-ultima-compra" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="valor-ultima-compra">Valor da Última Compra</label>
-                        <input type="number" class="form-control" id="valor-ultima-compra" min="0" step="0.01" placeholder="Valor" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Adicionar Cliente</button>
-                </form>
+                <div class="futuristic-card">
+                    <form id="client-form">
+                        <div class="form-group">
+                            <label for="nome">Nome</label>
+                            <input type="text" class="form-control" id="nome" placeholder="Nome do Cliente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfil">Perfil</label>
+                            <select class="form-control" id="perfil" required>
+                                <option value="Safe">Safe</option>
+                                <option value="Bravo">Bravo</option>
+                                <option value="Normal">Normal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dissonancia">Dissonância</label>
+                            <select class="form-control" id="dissonancia" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="localizacao">Localização</label>
+                            <input type="text" class="form-control" id="localizacao" placeholder="Localização" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ultimas-pecas">Últimas Peças Compradas</label>
+                            <input type="text" class="form-control" id="ultimas-pecas" placeholder="Peças compradas" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="data-ultima-compra">Data da Última Compra</label>
+                            <input type="date" class="form-control" id="data-ultima-compra" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="valor-ultima-compra">Valor da Última Compra</label>
+                            <input type="number" class="form-control" id="valor-ultima-compra" min="0" step="0.01" placeholder="Valor" required>
+                        </div>
+                        <button type="submit" class="btn btn-futuristic btn-block">Adicionar Cliente</button>
+                    </form>
+                </div>
             </div>
         </div>
         
@@ -83,13 +153,12 @@
         
         <h2>Clientes</h2>
         <div class="form-group">
-            <label for="search">Buscar Cliente pelo Código</label>
-            <input type="text" class="form-control" id="search" placeholder="Digite o código do cliente">
+            <label for="search">Buscar Cliente pelo Nome</label>
+            <input type="text" class="form-control" id="search" placeholder="Digite o nome do cliente">
         </div>
-        <table class="table table-striped table-bordered" id="clientes-table">
+        <table class="table futuristic-table" id="clientes-table">
             <thead>
                 <tr>
-                    <th>Código</th>
                     <th>Nome</th>
                     <th>Valor da Última Compra</th>
                     <th>Ações</th>
@@ -97,6 +166,8 @@
             </thead>
             <tbody></tbody>
         </table>
+        
+        <button id="reset-tabela" class="btn btn-futuristic">Zerar Tabela e Totais</button>
         
         <hr>
         
@@ -165,7 +236,7 @@
                             <label for="edit-valor-ultima-compra">Valor da Última Compra</label>
                             <input type="number" class="form-control" id="edit-valor-ultima-compra" min="0" step="0.01" required>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Salvar Alterações</button>
+                        <button type="submit" class="btn btn-futuristic btn-block">Salvar Alterações</button>
                     </form>
                 </div>
             </div>
@@ -175,8 +246,7 @@
     <script>
         $(document).ready(function() {
             var clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-            var ctx = $('#grafico-compras');
-            var graficoCompras = new Chart(ctx, {
+            var graficoCompras = new Chart(document.getElementById('grafico-compras').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: [],
@@ -184,56 +254,38 @@
                         label: 'Valor das Compras',
                         data: [],
                         backgroundColor: [],
-                        borderWidth: 1
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
             });
 
-            function salvarClientes() {
-                localStorage.setItem('clientes', JSON.stringify(clientes));
-            }
-
-            function gerarCodigoCliente() {
-                return 'C' + Math.random().toString(36).substr(2, 9);
-            }
-
             $('#client-form').submit(function(event) {
                 event.preventDefault();
-
                 var cliente = getClientFormData('#client-form');
-                cliente.codigo = gerarCodigoCliente();
-
                 clientes.push(cliente);
                 salvarClientes();
                 adicionarClienteNaTabela(cliente);
                 atualizarGraficoCompras();
                 calcularTotais();
-
-                this.reset();
+                $('#client-form')[0].reset();
             });
 
             $('#edit-form').submit(function(event) {
                 event.preventDefault();
-
                 var index = $('#edit-index').val();
                 var cliente = getClientFormData('#edit-form');
-                cliente.codigo = clientes[index].codigo;
-
                 clientes[index] = cliente;
                 salvarClientes();
                 atualizarTabela();
                 atualizarGraficoCompras();
                 calcularTotais();
-
                 $('#edit-modal').modal('hide');
             });
 
@@ -251,10 +303,10 @@
 
             function adicionarClienteNaTabela(cliente) {
                 var row = '<tr>' +
-                    '<td>' + cliente.codigo + '</td>' +
                     '<td>' + cliente.nome + '</td>' +
                     '<td>' + cliente.valorUltimaCompra.toFixed(2) + '</td>' +
-                    '<td><button class="btn btn-warning btn-sm edit-btn">Editar</button></td>' +
+                    '<td><button class="btn btn-warning btn-sm edit-btn">Editar</button>' +
+                    ' <button class="btn btn-danger btn-sm delete-btn">Excluir</button></td>' +
                     '</tr>';
                 $('#clientes-table tbody').append(row);
             }
@@ -276,16 +328,37 @@
                 $('#edit-modal').modal('show');
             });
 
+            $('#clientes-table').on('click', '.delete-btn', function() {
+                var row = $(this).closest('tr');
+                var index = row.index();
+
+                clientes.splice(index, 1);
+                salvarClientes();
+                atualizarTabela();
+                atualizarGraficoCompras();
+                calcularTotais();
+            });
+
             $('#search').on('input', function() {
                 var searchValue = $(this).val().toLowerCase();
                 $('#clientes-table tbody tr').each(function() {
-                    var codigo = $(this).find('td').eq(0).text().toLowerCase();
-                    if (codigo.includes(searchValue)) {
+                    var nome = $(this).find('td').eq(0).text().toLowerCase();
+                    if (nome.includes(searchValue)) {
                         $(this).show();
                     } else {
                         $(this).hide();
                     }
                 });
+            });
+
+            $('#reset-tabela').click(function() {
+                if (confirm("Tem certeza que deseja zerar a tabela e os totais?")) {
+                    clientes = [];
+                    salvarClientes();
+                    atualizarTabela();
+                    atualizarGraficoCompras();
+                    calcularTotais();
+                }
             });
 
             function atualizarTabela() {
@@ -342,11 +415,22 @@
                 $('#total-anual').text(totalAnual.toFixed(2));
             }
 
+            function salvarClientes() {
+                localStorage.setItem('clientes', JSON.stringify(clientes));
+            }
+
+            $('#theme-toggle').click(function() {
+                var theme = $('body').attr('data-theme');
+                var newTheme = theme === 'light' ? 'dark' : 'light';
+                $('body').attr('data-theme', newTheme);
+            });
+
             // Inicializar tabela e gráfico com dados do localStorage
             atualizarTabela();
             atualizarGraficoCompras();
             calcularTotais();
         });
     </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
